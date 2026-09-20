@@ -1,0 +1,24 @@
+{
+  "name": "printing-marketplace",
+  "version": "1.0.0",
+  "description": "Yeh mera hyperlocal printing marketplace project hai.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hemantbadhala24-hub/printing-marketplace.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hemantbadhala24-hub/printing-marketplace/issues"
+  },
+  "homepage": "https://github.com/hemantbadhala24-hub/printing-marketplace#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
