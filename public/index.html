@@ -15,7 +15,7 @@
       width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc;
       border-radius: 4px; box-sizing: border-box;
     }
-    .form-box button {
+    .form-box button, .card button {
       width: 100%; padding: 10px; background: #d85a30; color: white;
       border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;
     }
@@ -45,8 +45,8 @@
   <h2>👥 Users</h2>
   <div id="users-list">Loading...</div>
 
-  <h2>🛍️ Products</h2>
-  <div id="products-list">Loading...</div>
+  <h2>🛍️ Available Products (Order Karein)</h2>
+  <div id="listings-list">Loading...</div>
 
   <script>
     function loadUsers() {
@@ -66,18 +66,20 @@
         });
     }
 
-    function loadProducts() {
-      fetch('/products')
+    function loadListings() {
+      fetch('/listings-detailed')
         .then(res => res.json())
-        .then(products => {
-          const container = document.getElementById('products-list');
+        .then(listings => {
+          const container = document.getElementById('listings-list');
           container.innerHTML = '';
-          products.forEach(p => {
+          listings.forEach(item => {
             container.innerHTML += `
               <div class="card">
-                <h3>${p.name}</h3>
-                <p>📦 Category: ${p.category}</p>
-                <p>📏 Sizes: ${p.sizes_available}</p>
+                <h3>${item.product_name}</h3>
+                <p>🏪 Shop: ${item.shop_name}</p>
+                <p>💰 Price: ₹${item.price}</p>
+                <p>📦 Stock: ${item.stock_quantity}</p>
+                <button onclick="placeOrder(${item.id}, ${item.price})">Order Now</button>
               </div>`;
           });
         });
@@ -105,8 +107,37 @@
       .catch(err => alert('Error: ' + err));
     }
 
+    function placeOrder(listingId, price) {
+      const customerId = prompt("Apni User ID daalein (jaise 1):");
+      const quantity = prompt("Kitni quantity chahiye?", "1");
+      const address = prompt("Delivery address daalein:");
+
+      if (!customerId || !quantity || !address) {
+        alert("Order cancel ho gaya - saari details zaroori hain");
+        return;
+      }
+
+      fetch('/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_id: parseInt(customerId),
+          listing_id: listingId,
+          quantity: parseInt(quantity),
+          total_price: price * parseInt(quantity),
+          delivery_address: address,
+          delivery_type: 'seller_delivery'
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert('Order place ho gaya! Order ID: ' + data.id);
+      })
+      .catch(err => alert('Error: ' + err));
+    }
+
     loadUsers();
-    loadProducts();
+    loadListings();
   </script>
 </body>
 </html>
