@@ -2,56 +2,134 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Printing Marketplace</title>
+  <title>PrintHub - Hyperlocal Printing Marketplace</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-    h1 { color: #d85a30; text-align: center; }
-    h2 { color: #333; text-align: center; margin-top: 40px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      background-color: #f8f9fa; 
+      color: #2d2d2d;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #d85a30, #c94a20);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .navbar h1 { font-size: 28px; font-weight: 600; }
+    .navbar p { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+    .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 30px 0 15px 0;
+      color: #2d2d2d;
+      border-left: 4px solid #d85a30;
+      padding-left: 10px;
+    }
     .form-box {
-      background: white; padding: 20px; margin: 10px auto; max-width: 400px;
-      border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: white;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
+    .form-box h3 { margin-bottom: 15px; font-size: 16px; color: #444; }
     .form-box input, .form-box select {
-      width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc;
-      border-radius: 4px; box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
     }
-    .form-box button, .card button {
-      width: 100%; padding: 10px; background: #d85a30; color: white;
-      border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;
+    .form-box input:focus, .form-box select:focus {
+      outline: none;
+      border-color: #d85a30;
     }
-    .card {
-      background: white; padding: 15px; margin: 10px auto; max-width: 400px;
-      border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #d85a30;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    .card h3 { margin: 0 0 5px 0; color: #333; }
-    .card p { margin: 2px 0; color: #666; }
+    .btn:hover { background: #c94a20; }
+    .product-card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .product-info h3 { font-size: 16px; color: #2d2d2d; margin-bottom: 4px; }
+    .product-info p { font-size: 13px; color: #777; margin: 2px 0; }
+    .price-tag {
+      font-size: 18px;
+      font-weight: 700;
+      color: #d85a30;
+    }
+    .order-btn {
+      background: #d85a30;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
-  <h1>🖨️ Printing Marketplace</h1>
-
-  <div class="form-box">
-    <h3>Naya Account Banayein</h3>
-    <input type="text" id="reg-name" placeholder="Naam">
-    <input type="text" id="reg-phone" placeholder="Phone Number">
-    <input type="email" id="reg-email" placeholder="Email (optional)">
-    <input type="password" id="reg-password" placeholder="Password">
-    <select id="reg-role">
-      <option value="customer">Customer</option>
-      <option value="seller">Seller</option>
-    </select>
-    <button onclick="registerUser()">Register Karein</button>
+  <div class="navbar">
+    <h1>🖨️ Badhala PrintHub</h1>
+    <p>Aapke shehar ke best print shops, ek jagah</p>
   </div>
 
-  <div class="form-box">
-    <h3>Login Karein</h3>
-    <input type="text" id="login-phone" placeholder="Phone Number">
-    <input type="password" id="login-password" placeholder="Password">
-    <button onclick="loginUser()">Login Karein</button>
-  </div>
+  <div class="container">
+    <div class="section-title">Naya Account Banayein</div>
+    <div class="form-box">
+      <input type="text" id="reg-name" placeholder="Naam">
+      <input type="text" id="reg-phone" placeholder="Phone Number">
+      <input type="email" id="reg-email" placeholder="Email (optional)">
+      <input type="password" id="reg-password" placeholder="Password">
+      <select id="reg-role">
+        <option value="customer">Customer</option>
+        <option value="seller">Seller</option>
+      </select>
+      <button class="btn" onclick="registerUser()">Register Karein</button>
+    </div>
 
-  <h2>🛍️ Available Products (Order Karein)</h2>
-  <div id="listings-list">Loading...</div>
+    <div class="section-title">Login Karein</div>
+    <div class="form-box">
+      <input type="text" id="login-phone" placeholder="Phone Number">
+      <input type="password" id="login-password" placeholder="Password">
+      <button class="btn" onclick="loginUser()">Login Karein</button>
+    </div>
+
+    <div class="section-title">🛍️ Available Products</div>
+    <div id="listings-list">Loading...</div>
+  </div>
 
   <script>
     function loadListings() {
@@ -62,12 +140,14 @@
           container.innerHTML = '';
           listings.forEach(item => {
             container.innerHTML += `
-              <div class="card">
-                <h3>${item.product_name}</h3>
-                <p>🏪 Shop: ${item.shop_name}</p>
-                <p>💰 Price: ₹${item.price}</p>
-                <p>📦 Stock: ${item.stock_quantity}</p>
-                <button onclick="placeOrder(${item.id}, ${item.price})">Order Now</button>
+              <div class="product-card">
+                <div class="product-info">
+                  <h3>${item.product_name}</h3>
+                  <p>🏪 ${item.shop_name}</p>
+                  <p>📦 Stock: ${item.stock_quantity}</p>
+                  <div class="price-tag">₹${item.price}</div>
+                  <button class="order-btn" onclick="placeOrder(${item.id}, ${item.price})">Order Now</button>
+                </div>
               </div>`;
           });
         });
@@ -108,7 +188,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.id) {
-          alert(`Welcome ${data.name}! Aapki User ID hai: ${data.id}`);
+          alert(`Welcome ${data.name}!`);
           localStorage.setItem('userId', data.id);
           localStorage.setItem('userName', data.name);
         } else {
@@ -124,7 +204,7 @@
       const address = prompt("Delivery address daalein:");
 
       if (!customerId || !quantity || !address) {
-        alert("Order cancel ho gaya - saari details zaroori hain");
+        alert("Order cancel ho gaya");
         return;
       }
 
