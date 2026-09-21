@@ -5,6 +5,7 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(express.static('public'));
+
 app.get('/', (req, res) => {
   res.send('Hello! Mera Printing Marketplace server chal raha hai!');
 });
@@ -33,6 +34,28 @@ app.post('/users', async (req, res) => {
     const result = await pool.query(
       'INSERT INTO users (name, phone_number, email, role) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, phone_number, email, role]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.get('/products', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM products');
+    res.json(result.rows);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.post('/products', async (req, res) => {
+  try {
+    const { name, category, is_customizable, base_image_url, sizes_available } = req.body;
+    const result = await pool.query(
+      'INSERT INTO products (name, category, is_customizable, base_image_url, sizes_available) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, category, is_customizable, base_image_url, sizes_available]
     );
     res.json(result.rows[0]);
   } catch (err) {
