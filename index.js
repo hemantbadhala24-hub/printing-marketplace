@@ -85,6 +85,28 @@ app.post('/sellers', async (req, res) => {
   }
 });
 
+app.get('/listings', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM seller_listings');
+    res.json(result.rows);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.post('/listings', async (req, res) => {
+  try {
+    const { seller_id, product_id, price, stock_quantity } = req.body;
+    const result = await pool.query(
+      'INSERT INTO seller_listings (seller_id, product_id, price, stock_quantity) VALUES ($1, $2, $3, $4) RETURNING *',
+      [seller_id, product_id, price, stock_quantity]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server chal raha hai: http://localhost:${PORT}`);
 });
