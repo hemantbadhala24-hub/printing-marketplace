@@ -1,5 +1,6 @@
 const pool = require('./db');
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 3000;
 
@@ -21,21 +22,44 @@ app.get('/test-db', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
+    const result = await pool.query('SELECT id, name, phone_number, email, role, created_at FROM users');
     res.json(result.rows);
   } catch (err) {
     res.send(`Error: ${err.message}`);
   }
 });
 
-app.post('/users', async (req, res) => {
+app.post('/register', async (req, res) => {
   try {
-    const { name, phone_number, email, role } = req.body;
+    const { name, phone_number, email, role, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO users (name, phone_number, email, role) VALUES ($1, $2, $3, $4) RETURNING *',
-      [name, phone_number, email, role]
+      'INSERT INTO users (name, phone_number, email, role, password) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, phone_number, role',
+      [name, phone_number, email, role, hashedPassword]
     );
     res.json(result.rows[0]);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const { phone_number, password } = req.body;
+    const result = await pool.query('SELECT * FROM users WHERE phone_number = $1', [phone_number]);
+    
+    if (result.rows.length === 0) {
+      return res.send('Error: User nahi mila');
+    }
+
+    const user = result.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.send('Error: Galat password');
+    }
+
+    res.json({ id: user.id, name: user.name, role: user.role });
   } catch (err) {
     res.send(`Error: ${err.message}`);
   }

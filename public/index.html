@@ -31,41 +31,29 @@
   <h1>🖨️ Printing Marketplace</h1>
 
   <div class="form-box">
-    <h3>Naya User Register Karein</h3>
-    <input type="text" id="name" placeholder="Naam">
-    <input type="text" id="phone" placeholder="Phone Number">
-    <input type="email" id="email" placeholder="Email (optional)">
-    <select id="role">
+    <h3>Naya Account Banayein</h3>
+    <input type="text" id="reg-name" placeholder="Naam">
+    <input type="text" id="reg-phone" placeholder="Phone Number">
+    <input type="email" id="reg-email" placeholder="Email (optional)">
+    <input type="password" id="reg-password" placeholder="Password">
+    <select id="reg-role">
       <option value="customer">Customer</option>
       <option value="seller">Seller</option>
     </select>
     <button onclick="registerUser()">Register Karein</button>
   </div>
 
-  <h2>👥 Users</h2>
-  <div id="users-list">Loading...</div>
+  <div class="form-box">
+    <h3>Login Karein</h3>
+    <input type="text" id="login-phone" placeholder="Phone Number">
+    <input type="password" id="login-password" placeholder="Password">
+    <button onclick="loginUser()">Login Karein</button>
+  </div>
 
   <h2>🛍️ Available Products (Order Karein)</h2>
   <div id="listings-list">Loading...</div>
 
   <script>
-    function loadUsers() {
-      fetch('/users')
-        .then(res => res.json())
-        .then(users => {
-          const container = document.getElementById('users-list');
-          container.innerHTML = '';
-          users.forEach(user => {
-            container.innerHTML += `
-              <div class="card">
-                <h3>${user.name}</h3>
-                <p>📱 ${user.phone_number}</p>
-                <p>👤 Role: ${user.role}</p>
-              </div>`;
-          });
-        });
-    }
-
     function loadListings() {
       fetch('/listings-detailed')
         .then(res => res.json())
@@ -86,29 +74,52 @@
     }
 
     function registerUser() {
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const email = document.getElementById('email').value;
-      const role = document.getElementById('role').value;
+      const name = document.getElementById('reg-name').value;
+      const phone = document.getElementById('reg-phone').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
 
-      fetch('/users', {
+      fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone_number: phone, email, role })
+        body: JSON.stringify({ name, phone_number: phone, email, password, role })
       })
       .then(res => res.json())
       .then(data => {
-        alert('User register ho gaya: ' + data.name);
-        document.getElementById('name').value = '';
-        document.getElementById('phone').value = '';
-        document.getElementById('email').value = '';
-        loadUsers();
+        alert('Account ban gaya! Ab login karein.');
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-phone').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-password').value = '';
+      })
+      .catch(err => alert('Error: ' + err));
+    }
+
+    function loginUser() {
+      const phone = document.getElementById('login-phone').value;
+      const password = document.getElementById('login-password').value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.id) {
+          alert(`Welcome ${data.name}! Aapki User ID hai: ${data.id}`);
+          localStorage.setItem('userId', data.id);
+          localStorage.setItem('userName', data.name);
+        } else {
+          alert('Login fail: ' + JSON.stringify(data));
+        }
       })
       .catch(err => alert('Error: ' + err));
     }
 
     function placeOrder(listingId, price) {
-      const customerId = prompt("Apni User ID daalein (jaise 1):");
+      const customerId = localStorage.getItem('userId') || prompt("Apni User ID daalein:");
       const quantity = prompt("Kitni quantity chahiye?", "1");
       const address = prompt("Delivery address daalein:");
 
@@ -136,7 +147,6 @@
       .catch(err => alert('Error: ' + err));
     }
 
-    loadUsers();
     loadListings();
   </script>
 </body>
