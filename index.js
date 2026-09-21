@@ -63,6 +63,28 @@ app.post('/products', async (req, res) => {
   }
 });
 
+app.get('/sellers', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM sellers');
+    res.json(result.rows);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.post('/sellers', async (req, res) => {
+  try {
+    const { user_id, shop_name, address, latitude, longitude } = req.body;
+    const result = await pool.query(
+      'INSERT INTO sellers (user_id, shop_name, address, latitude, longitude) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [user_id, shop_name, address, latitude, longitude]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server chal raha hai: http://localhost:${PORT}`);
 });
