@@ -145,6 +145,37 @@ app.post('/orders', async (req, res) => {
   }
 });
 
+app.get('/seller-orders/:sellerId', async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const result = await pool.query(`
+      SELECT orders.id, orders.quantity, orders.total_price, orders.delivery_address, 
+             orders.status, orders.created_at, users.name AS customer_name, users.phone_number
+      FROM orders
+      JOIN users ON orders.customer_id = users.id
+      WHERE orders.seller_id = $1
+      ORDER BY orders.created_at DESC
+    `, [sellerId]);
+    res.json(result.rows);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
+app.put('/orders/:orderId/status', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const result = await pool.query(
+      'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
+      [status, orderId]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server chal raha hai: http://localhost:${PORT}`);
 });
