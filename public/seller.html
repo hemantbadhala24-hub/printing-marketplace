@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+    h1 { color: #d85a30; text-align: center; }
+    .card {
+      background: white; padding: 15px; margin: 10px auto; max-width: 450px;
+      border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 { margin: 0 0 5px 0; color: #333; }
+    .card p { margin: 2px 0; color: #666; }
+    .status { font-weight: bold; color: #d85a30; }
+    select, button {
+      padding: 8px; margin-top: 8px; border-radius: 4px; border: 1px solid #ccc;
+    }
+    button { background: #d85a30; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🏪 Seller Dashboard</h1>
+  <p style="text-align:center">Apni Seller ID daalein: <input type="number" id="sellerId" value="1" style="width:60px"> <button onclick="loadOrders()">Orders Dekhein</button></p>
+
+  <div id="orders-list"></div>
+
+  <script>
+    function loadOrders() {
+      const sellerId = document.getElementById('sellerId').value;
+      fetch(`/seller-orders/${sellerId}`)
+        .then(res => res.json())
+        .then(orders => {
+          const container = document.getElementById('orders-list');
+          container.innerHTML = '';
+          if (orders.length === 0) {
+            container.innerHTML = '<p style="text-align:center">Koi order nahi hai</p>';
+            return;
+          }
+          orders.forEach(order => {
+            container.innerHTML += `
+              <div class="card">
+                <h3>Order #${order.id}</h3>
+                <p>👤 Customer: ${order.customer_name} (${order.phone_number})</p>
+                <p>📦 Quantity: ${order.quantity}</p>
+                <p>💰 Total: ₹${order.total_price}</p>
+                <p>📍 Address: ${order.delivery_address}</p>
+                <p>Status: <span class="status">${order.status}</span></p>
+                <select id="status-${order.id}">
+                  <option value="placed">Placed</option>
+                  <option value="accepted_by_seller">Accepted</option>
+                  <option value="printing">Printing</option>
+                  <option value="out_for_delivery">Out for Delivery</option>
+                  <option value="delivered">Delivered</option>
+                </select>
+                <button onclick="updateStatus(${order.id})">Status Update Karein</button>
+              </div>`;
+          });
+        });
+    }
+
+    function updateStatus(orderId) {
+      const newStatus = document.getElementById(`status-${orderId}`).value;
+      fetch(`/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert('Status update ho gaya: ' + data.status);
+        loadOrders();
+      });
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>
