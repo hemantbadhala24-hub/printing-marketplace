@@ -107,6 +107,21 @@ app.post('/listings', async (req, res) => {
   }
 });
 
+app.get('/listings-detailed', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT seller_listings.id, seller_listings.price, seller_listings.stock_quantity,
+             products.name AS product_name, sellers.shop_name
+      FROM seller_listings
+      JOIN products ON seller_listings.product_id = products.id
+      JOIN sellers ON seller_listings.seller_id = sellers.id
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.send(`Error: ${err.message}`);
+  }
+});
+
 app.get('/orders', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM orders');
